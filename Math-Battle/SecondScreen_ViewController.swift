@@ -8,16 +8,48 @@
 
 import UIKit
 
-class SecondScreen_ViewController: UIViewController {
+enum buttonClicked {
+    case CORRECT_BUTTON
+    case WRONG_BUTTON
+}
 
+var score:Int = 0;
+
+class SecondScreen_ViewController: UIViewController {
+    
+    //instance variables
+    
+    var currentQuestionCorrect:Bool = true;
+    
+    func updateScore(newScore:Int){
+        score = newScore;
+        Label_ScoreNum.text = String(score);
+    }
+    
+    func makeDecision(button:buttonClicked){
+        if(button == .CORRECT_BUTTON && currentQuestionCorrect){
+            score += 1;
+            updateScore(newScore: score);
+        }
+        //don't see the need for additional statements here
+    }
+    
+    
+    
+    
+    
+    
+    @IBOutlet weak var Label_ScoreNum: UILabel!
     
     @IBOutlet weak var Label_Score: UILabel!
     @IBOutlet weak var Label_Equation: UILabel!
     
     @IBAction func Button_Correct(_ sender: UIButton) {
+        makeDecision(button: .CORRECT_BUTTON);
     }
     
     @IBAction func Button_Wrong(_ sender: UIButton) {
+        makeDecision(button: .WRONG_BUTTON);
     }
     
     @IBOutlet weak var Progress_Bar: UIProgressView!
