@@ -13,15 +13,32 @@ enum buttonClicked {
     case WRONG_BUTTON
 }
 
-var score:Int = 0;
+enum questionStatus{
+    case MAKECORRECTQUESTION
+    case MAKEWRONGQUESTION
+}
+
+enum Operations{
+    case ADDITION
+    case SUBTRACTION
+    case MULTIPLICATION
+    case DIVISION
+}
+
+struct Operands{
+    let firstNum:Int
+    let secondNum:Int
+}
+
 
 class SecondScreen_ViewController: UIViewController {
     
     //instance variables
     
+    var score:Int = 0;
     var currentQuestionCorrect:Bool = true;
     
-    func updateScore(newScore:Int){
+    func updateScore( _ newScore:Int){
         score = newScore;
         Label_ScoreNum.text = String(score);
     }
@@ -29,14 +46,100 @@ class SecondScreen_ViewController: UIViewController {
     func makeDecision(button:buttonClicked){
         if(button == .CORRECT_BUTTON && currentQuestionCorrect){
             score += 1;
-            updateScore(newScore: score);
+            updateScore(score);
         }
         //don't see the need for additional statements here
     }
     
     
     
+    func makeRandomOperands() -> Operands {
+        let both = Operands(firstNum: Int.random(in: 2 ..< 100), secondNum: Int.random(in: 3 ..< 100));
+        
+        return both;
+    }
     
+    func makeRandomOperation() -> Operations {
+        let randomNum:Int = Int.random(in: 0...3);
+        
+        if(randomNum == 0){
+            return .ADDITION;
+        } else if (randomNum == 1){
+            return .SUBTRACTION;
+        } else if (randomNum == 2){
+            return .MULTIPLICATION;
+        } else {
+            return .DIVISION;
+        }
+    }
+    
+    func chooseRandomQuestionStatus() -> questionStatus {
+        let randomNum:Int = Int.random(in: 0...1)
+        
+        if(randomNum == 0){
+            return .MAKECORRECTQUESTION
+        } else{
+            return .MAKEWRONGQUESTION
+        }
+    }
+    
+    func makeEquation(_ operations:Operations, _ operands:Operands, _ questionStatus:questionStatus) -> String {
+        var outputStr:String
+        
+        if (operations == .ADDITION) {
+            let result:Int = operands.firstNum + operands.secondNum
+            
+            if (questionStatus == .MAKECORRECTQUESTION){
+                outputStr = String(operands.firstNum) + " + " + String(operands.secondNum) + " = " + String(result);
+                
+                currentQuestionCorrect = true;
+            } else {
+                outputStr = String(operands.firstNum) + " + " + String(operands.secondNum) + " = " + String(result+10);
+                
+                currentQuestionCorrect = false;
+            }
+            
+        } else if (operations == .SUBTRACTION) {
+            let result:Int = operands.firstNum - operands.secondNum
+            
+            if (questionStatus == .MAKECORRECTQUESTION){
+                outputStr = String(operands.firstNum) + " - " + String(operands.secondNum) + " = " + String(result);
+                
+                currentQuestionCorrect = true;
+            } else {
+                outputStr = String(operands.firstNum) + " - " + String(operands.secondNum) + " = " + String(result-10);
+                
+                currentQuestionCorrect = false;
+            }
+        } else if (operations == .MULTIPLICATION) {
+            let result:Int = operands.firstNum * operands.secondNum
+            
+            if (questionStatus == .MAKECORRECTQUESTION){
+                outputStr = String(operands.firstNum) + " * " + String(operands.secondNum) + " = " + String(result);
+                
+                currentQuestionCorrect = true;
+            } else {
+                outputStr = String(operands.firstNum) + " * " + String(operands.secondNum) + " = " + String(result + 10);
+                
+                currentQuestionCorrect = false;
+            }
+        } else {
+            let result:Int = operands.firstNum / operands.secondNum
+            
+            if (questionStatus == .MAKECORRECTQUESTION){
+                outputStr = String(operands.firstNum) + " / " + String(operands.secondNum) + " = " + String(result);
+                
+                currentQuestionCorrect = true;
+            } else {
+                outputStr = String(operands.firstNum) + " / " + String(operands.secondNum) + " = " + String(result-10);
+                
+                currentQuestionCorrect = false;
+            }
+        }
+        
+        
+        return outputStr
+    }
     
     
     @IBOutlet weak var Label_ScoreNum: UILabel!
@@ -60,16 +163,6 @@ class SecondScreen_ViewController: UIViewController {
 
         // Do any additional setup after loading the view.
     }
-    
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
