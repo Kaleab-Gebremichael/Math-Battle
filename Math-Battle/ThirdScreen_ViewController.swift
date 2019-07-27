@@ -12,14 +12,26 @@ class ThirdScreen_ViewController: UIViewController {
 
     @IBOutlet weak var Label_HighScore1: UILabel!
     
-    @IBOutlet weak var Label_HighScore2: UILabel!
+    var firstScreen:ViewController = ViewController()
     
-    @IBOutlet weak var Label_HighScore3: UILabel!
+    var scoreString = String(0);
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        Label_HighScore1.text = scoreString;
+        
+        
+        if let score = firstScreen.dictionary.string(forKey: "highScore"){
+            if var highScore = Label_HighScore1.text {
+                if(Int(score)! > Int(highScore)!){
+                    highScore = score;
+                }
+            }
+            
+        }
     }
     
 

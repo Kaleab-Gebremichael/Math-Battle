@@ -11,6 +11,7 @@ import UIKit
 enum buttonClicked {
     case CORRECT_BUTTON
     case WRONG_BUTTON
+    case PLAY_BUTTON
 }
 
 enum questionStatus{
@@ -38,15 +39,44 @@ class SecondScreen_ViewController: UIViewController {
     var score:Int = 0;
     var currentQuestionCorrect:Bool = true;
     
-    func updateScore( _ newScore:Int){
-        score = newScore;
-        Label_ScoreNum.text = String(score);
+    
+    //this is where it all comes together
+    func gamePlay(button:buttonClicked){
+        
+        //update score if correct
+        makeDecision(button);
+        
+        let equationToDisplay:String = makeEquation(makeRandomOperation(), makeRandomOperands(), chooseRandomQuestionStatus());
+        
+        Label_Equation.text = equationToDisplay;
     }
     
-    func makeDecision(button:buttonClicked){
+    func updateScore( _ newScore:Int){
+        Label_ScoreNum.text = String(self.score);
+    }
+    
+    
+    func makeDecision(_ button:buttonClicked){
+        
+        var firstScreen:ViewController = ViewController();
+        
         if(button == .CORRECT_BUTTON && currentQuestionCorrect){
-            score += 1;
-            updateScore(score);
+            self.score += 1;
+            updateScore(self.score);
+            
+            //update highScore if needed
+            //updateHighScore();
+            
+            firstScreen.dictionary.set(score, forKey: "highScore");
+            
+        } else if (button == .WRONG_BUTTON && !currentQuestionCorrect){
+            self.score += 1;
+            updateScore(self.score);
+            
+            //update highScore if needed
+            //updateHighScore();
+            
+            firstScreen.dictionary.set(score, forKey: "highScore");
         }
         //don't see the need for additional statements here
     }
@@ -141,6 +171,48 @@ class SecondScreen_ViewController: UIViewController {
         return outputStr
     }
     
+    func updateHighScore(){
+        let thirdScreen = ThirdScreen_ViewController();
+        
+        if (String(self.score) > thirdScreen.scoreString){
+            thirdScreen.scoreString = String(self.score);
+        }
+//
+//        if thirdScreen.Label_HighScore1.text == nil{
+//            thirdScreen.Label_HighScore1.text = String(score);
+//            thirdScreen.dictionary.set(thirdScreen.Label_HighScore1.text, forKey: "highScore");
+//        } else{
+//            if self.score > (Int(thirdScreen.Label_HighScore1.text))! {
+//
+//                highScore = String(score);
+//                thirdScreen.dictionary.set(thirdScreen.Label_HighScore1.text, forKey: "highScore");
+//            }
+//        }
+//
+//        if var highScore = thirdScreen.Label_HighScore1.text{
+//            if self.score > (Int(highScore))! {
+//
+//                highScore = String(score);
+//                thirdScreen.dictionary.set(thirdScreen.Label_HighScore1.text, forKey: "highScore");
+//            }
+//        }
+        
+        performSegue(withIdentifier: "updateHighScoreSegue", sender: self)
+    }
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if (segue.identifier == "updateHighScoreSegue") {
+//            guard let viewController = segue.destination as? ThirdScreen_ViewController else {return}
+//
+//            guard var highScore = viewController.Label_HighScore1 else {return}
+//
+//            if(self.score > Int(highScore.text!)!){
+//                highScore.text = String(self.score);
+//
+//                viewController.dictionary.set(highScore.text, forKey: "highScore");
+//            }
+//        }
+//    }
     
     @IBOutlet weak var Label_ScoreNum: UILabel!
     
@@ -148,11 +220,11 @@ class SecondScreen_ViewController: UIViewController {
     @IBOutlet weak var Label_Equation: UILabel!
     
     @IBAction func Button_Correct(_ sender: UIButton) {
-        makeDecision(button: .CORRECT_BUTTON);
+        gamePlay(button: .CORRECT_BUTTON);
     }
     
     @IBAction func Button_Wrong(_ sender: UIButton) {
-        makeDecision(button: .WRONG_BUTTON);
+        gamePlay(button: .WRONG_BUTTON);
     }
     
     @IBOutlet weak var Progress_Bar: UIProgressView!
@@ -160,6 +232,8 @@ class SecondScreen_ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        gamePlay(button: .PLAY_BUTTON)
 
         // Do any additional setup after loading the view.
     }
